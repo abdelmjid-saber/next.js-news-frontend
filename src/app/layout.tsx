@@ -17,8 +17,7 @@ export const metadata = {
     },
     description: "Next.js News is the official blog of Next.js. Every day bringing you the latest news, tutorials, and packages for the framework.",
     other: {
-        name: "google-site-verification",
-        content: "_IqktHo6oIo2-k8jc95j-_drdPO8K-MK4KHTP4U9VnE"
+        "google-site-verification": "_IqktHo6oIo2-k8jc95j-_drdPO8K-MK4KHTP4U9VnE"
     }
 }
 
