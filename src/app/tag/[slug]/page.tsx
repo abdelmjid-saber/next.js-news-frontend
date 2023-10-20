@@ -5,9 +5,15 @@ import { BlogCard } from "@/components/ui/blog-card";
 import { Button } from "@/components/ui/button";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
 
+type Tag = {
+    id: number;
+    name: string;
+    slug: string;
+};
+
 export default function Page({ params }: { params: { slug: string } }) {
     const [posts, setPosts] = useState([]);
-    const [tag, setTag] = useState([]);
+    const [tag, setTag] = useState<Tag | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -33,7 +39,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             <section className="mt-10">
                 <div className="flex items-center justify-between">
                     <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-                        {tag?.name}
+                        {tag ? tag.name : "Loading..."}
                     </h2>
                 </div>
                 <div className="grid justify-items-center gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">

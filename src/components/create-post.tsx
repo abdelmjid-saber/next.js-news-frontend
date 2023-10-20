@@ -18,17 +18,29 @@ import fetchClientWithFiles from "@/lib/fetch-client-with-files";
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import toast from "react-hot-toast";
+import { FilePondFile } from "filepond";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview, FilePondPluginFileValidateType, FilePondPluginFileValidateSize)
+
+type Category = {
+    id: number;
+    name: string;
+    slug: string;
+};
+
+type Tag = {
+    id: number;
+    name: string;
+    slug: string;
+};
 
 export default function CreatePost() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [tags, setTags] = useState([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
     const [content, setContent] = useState('');
-    const [files, setFiles] = useState([])
-
+    const [files, setFiles] = useState<FilePondFile[]>([]);
     const { quill, quillRef } = useQuill();
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -38,7 +50,9 @@ export default function CreatePost() {
         try {
             const formData = new FormData(event.currentTarget);
 
-            formData.append('featured_image', files[0].file);
+            if (files.length > 0) {
+                formData.append('featured_image', files[0].file);
+            }
 
             const selectedTags = Array.from(formData.getAll('tags[]'));
             formData.set('tags', JSON.stringify(selectedTags));
@@ -48,7 +62,6 @@ export default function CreatePost() {
                 url: process.env.NEXT_PUBLIC_BACKEND_API_URL + "/api/dashboard/posts/store",
                 body: formData,
             });
-
 
             if (!response.ok) {
                 throw response;
@@ -151,22 +164,22 @@ export default function CreatePost() {
                     <Label htmlFor="category">Category</Label>
                     <select id="category" name="category" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                         <option selected disabled>Select a category</option>
-                        {categories.map((category) => (
+                        {categories ? categories.map((category) => (
                             <option key={category.id} value={category.id}>
                                 {category.name}
                             </option>
-                        ))}
+                        )) : ''}
                     </select>
                 </div>
 
                 <div className="grid gap-2">
                     <Label htmlFor="tags">Tags</Label>
                     <select id="tags" name="tags[]" multiple className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                        {tags.map((tag) => (
+                        {tags ? tags.map((tag) => (
                             <option key={tag.id} value={tag.id}>
                                 {tag.name}
                             </option>
-                        ))}
+                        )) : ''}
                     </select>
                 </div>
             </div>
@@ -181,7 +194,7 @@ export default function CreatePost() {
             <div className="grid gap-2">
                 <Label htmlFor="featured_image">Featured Image</Label>
                 <FilePond
-                    files={files}
+                    // files={files}
                     onupdatefiles={setFiles}
                     name="featured_image"
                     required

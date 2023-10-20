@@ -19,6 +19,7 @@ import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import toast from "react-hot-toast";
 import fetchClient from "@/lib/fetch-client";
+import { ActualFileObject, FileOrigin, FilePondFile, FileStatus } from "filepond";
 
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview, FilePondPluginFileValidateType, FilePondPluginFileValidateSize)
 
@@ -26,15 +27,57 @@ type Props = {
     slug: string
 }
 
+type Post = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    featured_image: string;
+    status: string;
+    created_at: string;
+    category_id: number;
+    user: {
+        id: number;
+        name: string;
+        username: string;
+        bio: string;
+        profile_photo_url: string;
+    };
+    category: {
+        id: number;
+        name: string;
+        slug: string;
+    };
+    tags: Array<{
+        id: number;
+        name: string;
+        slug: string;
+    }>;
+};
+
+type Category = {
+    id: number;
+    name: string;
+    slug: string;
+};
+
+type Tag = {
+    id: number;
+    name: string;
+    slug: string;
+};
+
+
 export default function EditPost({ slug }: Props) {
     const router = useRouter();
-    const [post, setPost] = useState([]);
-    const [selectedTags, setSelectedTags] = useState([]);
+    const [post, setPost] = useState<Post | null>(null);
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [categories, setCategories] = useState([]);
-    const [tags, setTags] = useState([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [tags, setTags] = useState<Tag[]>([]);
     const [content, setContent] = useState('');
-    const [files, setFiles] = useState([])
+    const [files, setFiles] = useState<FilePondFile[]>([]);
 
     const { quill, quillRef } = useQuill();
 
@@ -52,21 +95,20 @@ export default function EditPost({ slug }: Props) {
         fetchData();
     }, [slug]);
 
-    const existImage = process.env.NEXT_PUBLIC_BACKEND_API_URL + post.featured_image;
+    const existImage = post ? process.env.NEXT_PUBLIC_BACKEND_API_URL + post.featured_image : '';
 
     useEffect(() => {
         if (quill) {
-            quill.root.innerHTML = post.content
+            quill.root.innerHTML = post ? post.content : ''
         }
 
-        if (post.featured_image != 'undefined' && existImage != process.env.NEXT_PUBLIC_BACKEND_API_URL + 'undefined') {
-            setFiles([
-                {
-                    source: existImage,
-                    options: { type: "local" }
-                }
-            ]);
-        }
+        // if (post ? post.featured_image != 'undefined' : '' && existImage != process.env.NEXT_PUBLIC_BACKEND_API_URL + 'undefined') {
+        //     setFiles([
+        //         {
+        //             id
+        //         }
+        //     ]);
+        // }
 
     }, [quill, post, existImage]);
 
@@ -106,10 +148,11 @@ export default function EditPost({ slug }: Props) {
     const maxFileSize = '3MB';
 
     const pondOptions = {
-        credits: false,
         acceptedFileTypes: acceptedFileTypes,
         allowFileSizeValidation: true,
         maxFileSize: maxFileSize,
+        type: "local",
+        source: existImage,
     };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -119,8 +162,9 @@ export default function EditPost({ slug }: Props) {
         try {
             const formData = new FormData(event.currentTarget);
 
-            formData.append('featured_image', files[0].file);
-
+            if (files.length > 0) {
+                formData.append('featured_image', files[0].file);
+            }
             const selectedTags = Array.from(formData.getAll('tags[]'));
             formData.set('tags', JSON.stringify(selectedTags));
 
@@ -171,13 +215,13 @@ export default function EditPost({ slug }: Props) {
                     minLength={6}
                     maxLength={255}
                     required
-                    defaultValue={post.title}
+                    defaultValue={post?.title}
                 />
             </div>
 
             <div className="grid gap-2">
                 <Label htmlFor="excerpt">Short Description</Label>
-                <Textarea id="excerpt" name="excerpt" maxLength={158} required defaultValue={post.excerpt} />
+                <Textarea id="excerpt" name="excerpt" maxLength={158} required defaultValue={post?.excerpt} />
             </div>
 
             <div className="grid gap-2">
@@ -192,7 +236,7 @@ export default function EditPost({ slug }: Props) {
                     <select id="category" name="category" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
                         <option selected disabled>Select a category</option>
                         {categories.map((category) => (
-                            <option key={category.id} value={category.id} selected={post.category_id === category.id ? true : false}>
+                            <option key={category.id} value={category.id} selected={post?.category_id === category.id ? true : false}>
                                 {category.name}
                             </option>
                         ))}
@@ -217,16 +261,16 @@ export default function EditPost({ slug }: Props) {
             <div className="grid gap-2">
                 <Label htmlFor="status">Status</Label>
                 <select id="status" name="status" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <option disabled defaultValue="Published" selected={post.status === 'Published' ? true : false}>Published</option>
-                    <option defaultValue="Pending Review" selected={post.status === 'Pending Review' ? true : false}>Pending Review</option>
-                    <option defaultValue="Draft" selected={post.status === 'Draft' ? true : false}>Draft</option>
+                    <option disabled defaultValue="Published" selected={post?.status === 'Published' ? true : false}>Published</option>
+                    <option defaultValue="Pending Review" selected={post?.status === 'Pending Review' ? true : false}>Pending Review</option>
+                    <option defaultValue="Draft" selected={post?.status === 'Draft' ? true : false}>Draft</option>
                 </select>
             </div>
 
             <div className="grid gap-2">
                 <Label htmlFor="featured_image">Featured Image</Label>
                 <FilePond
-                    files={files}
+                    // files={files}
                     onupdatefiles={setFiles}
                     name="featured_image"
                     required

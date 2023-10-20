@@ -3,7 +3,7 @@ import { getSession, signOut } from "next-auth/react";
 interface fetchClientProps {
     method?: string;
     url: string;
-    body?: string;
+    body?: string | FormData;
     token?: string;
 }
 

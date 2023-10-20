@@ -1,5 +1,32 @@
 import { BlogCard } from "./ui/blog-card";
 
+type Post = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    featured_image: string;
+    created_at: string;
+    user: {
+        id: number;
+        name: string;
+        username: string;
+        bio: string;
+        profile_photo_url: string;
+    };
+    category: {
+        id: number;
+        name: string;
+        slug: string;
+    };
+    tags: Array<{
+        id: number;
+        name: string;
+        slug: string;
+    }>;
+};
+
 const getPosts = async (): Promise<Post[]> => {
     const data = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/posts?views=desc&limit=8`);
 
@@ -7,7 +34,8 @@ const getPosts = async (): Promise<Post[]> => {
         throw new Error('Failed to fetch data')
     }
 
-    const posts = await data.json();
+    const response = await data.json();
+    const posts = response.data;
 
     return posts;
 };
@@ -23,8 +51,8 @@ export default async function Trending() {
                 </h2>
             </div>
             <div className="grid justify-items-center gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
-                {posts.data ? (
-                    posts.data.map((post) => (
+                {posts ? (
+                    posts.map((post) => (
                         <BlogCard key={post.id} post={post} />
                     ))
                 ) : (

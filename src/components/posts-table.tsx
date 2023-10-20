@@ -44,6 +44,7 @@ export type Posts = {
     category: string
     created_at: string
     status: "Published" | "Pending Review" | "Draft" | "Rejected"
+    slug: string
 }
 
 export const columns: ColumnDef<Posts>[] = [

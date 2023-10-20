@@ -42,7 +42,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                                     <MainNav className="hidden md:block mx-6" />
                                     <div className="ml-auto flex items-center space-x-4">
                                         <ModeToggle />
-                                        <UserNav user={user} />
+                                        {user && <UserNav user={user} />}
                                     </div>
                                 </div>
                             </div>

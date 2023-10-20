@@ -13,7 +13,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link";
 import Logout from "../logout";
 
-export default function UserNav({ user }) {
+type User = {
+    name: string;
+    email: string;
+};
+
+export default function UserNav({ user }: { user: User }) {
     return (
         user ? (
             <DropdownMenu>
