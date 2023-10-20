@@ -8,6 +8,7 @@ import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Footer } from "@/components/ui/footer";
 import { Toaster } from "react-hot-toast";
 import { getCurrentUser } from "@/lib/session";
+import GoogleAnalytics from "./GoogleAnalytics";
 
 export const metadata = {
     title: {
@@ -28,6 +29,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     return (
         <html lang="en">
             <body>
+                <GoogleAnalytics />
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
