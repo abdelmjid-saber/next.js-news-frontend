@@ -12,11 +12,14 @@ import GoogleAnalytics from "./GoogleAnalytics";
 
 export const metadata = {
     title: {
-        template: '%s | Next.js News',
-        default: 'Next.js News',
+        template: "%s | Next.js News",
+        default: "Next.js News",
     },
-
     description: "Next.js News is the official blog of Next.js. Every day bringing you the latest news, tutorials, and packages for the framework.",
+    other: {
+        name: "google-site-verification",
+        content: "_IqktHo6oIo2-k8jc95j-_drdPO8K-MK4KHTP4U9VnE"
+    }
 }
 
 interface RootLayoutProps {
