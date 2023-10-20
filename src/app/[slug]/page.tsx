@@ -29,6 +29,33 @@ export async function generateMetadata(
     };
 }
 
+type Post = {
+    id: number;
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    featured_image: string;
+    created_at: string;
+    user: {
+        id: number;
+        name: string;
+        username: string;
+        bio: string;
+        profile_photo_url: string;
+    };
+    category: {
+        id: number;
+        name: string;
+        slug: string;
+    };
+    tags: Array<{
+        id: number;
+        name: string;
+        slug: string;
+    }>;
+};
+
 const getPost = async (slug: string): Promise<Post> => {
     const data = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/post/${slug}`);
 

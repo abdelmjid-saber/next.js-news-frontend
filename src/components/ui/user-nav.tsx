@@ -10,14 +10,10 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { getCurrentUser } from "@/lib/session";
 import Link from "next/link";
-import { signOut } from "next-auth/react";
 import Logout from "../logout";
 
-export default async function UserNav() {
-    const user = await getCurrentUser();
-
+export default function UserNav({ user }) {
     return (
         user ? (
             <DropdownMenu>

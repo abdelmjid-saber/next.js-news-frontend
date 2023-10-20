@@ -28,7 +28,7 @@ export default async function NextjsPackages() {
                 </Button>
             </div>
             <div className="grid justify-items-center gap-4 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
-                {posts.posts.data ? (
+                {posts.data ? (
                     posts.posts.data.map((post) => (
                         <BlogCard key={post.id} post={post} />
                     ))

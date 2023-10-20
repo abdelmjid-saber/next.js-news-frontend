@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Footer } from "@/components/ui/footer";
 import { Toaster } from "react-hot-toast";
+import { getCurrentUser } from "@/lib/session";
 
 export const metadata = {
     title: {
@@ -21,7 +22,9 @@ interface RootLayoutProps {
     children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+    const user = await getCurrentUser();
+
     return (
         <html lang="en">
             <body>
@@ -39,7 +42,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                                     <MainNav className="hidden md:block mx-6" />
                                     <div className="ml-auto flex items-center space-x-4">
                                         <ModeToggle />
-                                        <UserNav />
+                                        <UserNav user={user} />
                                     </div>
                                 </div>
                             </div>

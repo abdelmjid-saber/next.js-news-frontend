@@ -4,15 +4,10 @@ import { useEffect, useState } from "react";
 import { BlogCard } from "@/components/ui/blog-card";
 import { Button } from "@/components/ui/button";
 import { SkeletonCard } from "@/components/ui/skeleton-card";
-import { Metadata, ResolvingMetadata } from "next";
-
-type Props = {
-    params: { slug: string }
-}
 
 export default function Page({ params }: { params: { slug: string } }) {
     const [posts, setPosts] = useState([]);
-    const [category, setCategory] = useState([]);
+    const [category, setCategory] = useState<{ name: string | null }>({ name: null });
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [lastPage, setLastPage] = useState(1);
@@ -32,7 +27,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             .catch((error) => {
                 throw new Error('Failed to fetch data')
             });
-    }, [currentPage]);
+    }, [currentPage, params.slug]);
 
     return (
         <div className="container space-y-16">

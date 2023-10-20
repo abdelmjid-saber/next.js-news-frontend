@@ -23,7 +23,7 @@ import fetchClient from "@/lib/fetch-client";
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview, FilePondPluginFileValidateType, FilePondPluginFileValidateSize)
 
 type Props = {
-    slug: { slug: string }
+    slug: string
 }
 
 export default function EditPost({ slug }: Props) {
@@ -38,7 +38,6 @@ export default function EditPost({ slug }: Props) {
 
     const { quill, quillRef } = useQuill();
 
-
     useEffect(() => {
         const fetchData = async () => {
             const response = await fetchClient({
@@ -51,7 +50,67 @@ export default function EditPost({ slug }: Props) {
         };
 
         fetchData();
+    }, [slug]);
+
+    const existImage = process.env.NEXT_PUBLIC_BACKEND_API_URL + post.featured_image;
+
+    useEffect(() => {
+        if (quill) {
+            quill.root.innerHTML = post.content
+        }
+
+        if (post.featured_image != 'undefined' && existImage != process.env.NEXT_PUBLIC_BACKEND_API_URL + 'undefined') {
+            setFiles([
+                {
+                    source: existImage,
+                    options: { type: "local" }
+                }
+            ]);
+        }
+
+    }, [quill, post, existImage]);
+
+    useEffect(() => {
+        if (quill) {
+            quill.on("text-change", () => {
+                const editorContent = quill.root.innerHTML;
+                setContent(editorContent);
+            });
+        }
+    }, [quill]);
+
+    useEffect(() => {
+        const apiCategoriesUrl = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/dashboard/posts/categories`;
+        const apiTagsUrl = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/dashboard/posts/tags`;
+
+        fetch(apiCategoriesUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                setCategories(data);
+            })
+            .catch((error) => {
+                throw new Error("Error fetching categories");
+            });
+
+        fetch(apiTagsUrl)
+            .then((response) => response.json())
+            .then((data) => {
+                setTags(data);
+            })
+            .catch((error) => {
+                throw new Error("Error fetching tags");
+            });
     }, []);
+
+    const acceptedFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    const maxFileSize = '3MB';
+
+    const pondOptions = {
+        credits: false,
+        acceptedFileTypes: acceptedFileTypes,
+        allowFileSizeValidation: true,
+        maxFileSize: maxFileSize,
+    };
 
     async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -100,66 +159,6 @@ export default function EditPost({ slug }: Props) {
             throw new Error("An error has occurred post store request");
         }
     }
-
-    const existImage = process.env.NEXT_PUBLIC_BACKEND_API_URL + post.featured_image;
-
-    useEffect(() => {
-        if (quill) {
-            quill.root.innerHTML = post.content
-        }
-
-        if (post.featured_image != 'undefined' && existImage != process.env.NEXT_PUBLIC_BACKEND_API_URL + 'undefined') {
-            setFiles([
-                {
-                    source: existImage,
-                    options: { type: "local" }
-                }
-            ]);
-        }
-
-    }, [post]);
-
-    useEffect(() => {
-        if (quill) {
-            quill.on("text-change", () => {
-                const editorContent = quill.root.innerHTML;
-                setContent(editorContent);
-            });
-        }
-    }, [quill]);
-
-    useEffect(() => {
-        const apiCategoriesUrl = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/dashboard/posts/categories`;
-        const apiTagsUrl = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/dashboard/posts/tags`;
-
-        fetch(apiCategoriesUrl)
-            .then((response) => response.json())
-            .then((data) => {
-                setCategories(data);
-            })
-            .catch((error) => {
-                throw new Error("Error fetching categories");
-            });
-
-        fetch(apiTagsUrl)
-            .then((response) => response.json())
-            .then((data) => {
-                setTags(data);
-            })
-            .catch((error) => {
-                throw new Error("Error fetching tags");
-            });
-    }, []);
-
-    const acceptedFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    const maxFileSize = '3MB';
-
-    const pondOptions = {
-        credits: false,
-        acceptedFileTypes: acceptedFileTypes,
-        allowFileSizeValidation: true,
-        maxFileSize: maxFileSize,
-    };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4 mt-4" encType="multipart/form-data">

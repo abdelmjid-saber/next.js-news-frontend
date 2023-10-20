@@ -14,7 +14,6 @@ export default function Page({ params }: { params: { slug: string } }) {
 
     useEffect(() => {
         const apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/posts/tag/${params.slug}?limit=16&page=${currentPage}`;
-        console.log(apiUrl)
         // Fetch data from the API
         fetch(apiUrl)
             .then((response) => response.json())
@@ -27,7 +26,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             .catch((error) => {
                 throw new Error('Failed to fetch data')
             });
-    }, [currentPage]);
+    }, [currentPage, params.slug]);
 
     return (
         <div className="container space-y-16">
