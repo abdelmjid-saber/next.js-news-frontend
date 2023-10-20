@@ -4,7 +4,7 @@ const nextConfig = {
     serverActions: true,
   },
   images: {
-    domains: ['127.0.0.1', 'ui-avatars.com'],
+    domains: ['nextjsnews.tailwindcraft.com', 'ui-avatars.com',],
   },
 };
 
