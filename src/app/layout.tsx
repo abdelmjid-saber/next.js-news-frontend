@@ -9,6 +9,8 @@ import { Footer } from "@/components/ui/footer";
 import { Toaster } from "react-hot-toast";
 import { getCurrentUser } from "@/lib/session";
 import GoogleAnalytics from "./GoogleAnalytics";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export const metadata = {
     title: {
@@ -46,7 +48,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
                                     <MainNav className="hidden md:block mx-6" />
                                     <div className="ml-auto flex items-center space-x-4">
                                         <ModeToggle />
-                                        {user && <UserNav user={user} />}
+                                        {user ? <UserNav user={user} /> : <Button asChild><Link href="/login">Login</Link></Button>}
                                     </div>
                                 </div>
                             </div>
